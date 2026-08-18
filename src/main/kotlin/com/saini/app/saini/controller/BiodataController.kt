@@ -100,7 +100,7 @@ class BiodataController(private val biodataService: BiodataService) {
         @RequestParam("siblings") siblings: String,
         @RequestParam("nativePlace") nativePlace: String,
         @RequestParam("contactNumber") contactNumber: String,
-        @RequestParam("photos") photos: Array<MultipartFile>?,
+        @RequestParam("photos", required = false) photos: List<MultipartFile>?,
         request: HttpServletRequest
     ): ResponseEntity<Any> {
         return try {
