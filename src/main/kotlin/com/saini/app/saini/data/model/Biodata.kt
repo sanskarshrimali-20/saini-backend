@@ -38,7 +38,9 @@ data class Biodata(
     var contactNumber: String = "",
 
     // Photo URLs (Stored as a collection)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "biodata_photos", joinColumns = [JoinColumn(name = "biodata_id")])
+    @Column(name = "photo_url")
     var profilePicUrls: List<String> = mutableListOf(),
 
     // Identification
