@@ -28,8 +28,9 @@ class BiodataService(private val biodataRepository: BiodataRepository) {
                 val path = Paths.get(uploadDir + fileName)
                 Files.write(path, photo.bytes)
                 
-                // Construct URL - Replace with your actual server IP/domain if necessary
-                val url = "http://192.168.0.112:8080/uploads/biodata_photos/$fileName"
+                // Construct URL - Automatically uses Render host or local IP
+                val host = System.getenv("RENDER_EXTERNAL_URL") ?: "http://192.168.0.112:8080"
+                val url = "$host/uploads/biodata_photos/$fileName"
                 photoUrls.add(url)
             }
         }
@@ -95,7 +96,8 @@ class BiodataService(private val biodataRepository: BiodataRepository) {
                     val fileName = UUID.randomUUID().toString() + "_" + photo.originalFilename
                     val path = Paths.get(uploadDir + fileName)
                     Files.write(path, photo.bytes)
-                    val url = "http://192.168.0.112:8080/uploads/biodata_photos/$fileName"
+                    val host = System.getenv("RENDER_EXTERNAL_URL") ?: "http://192.168.0.112:8080"
+                    val url = "$host/uploads/biodata_photos/$fileName"
                     photoUrls.add(url)
                 }
             }
