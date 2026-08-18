@@ -20,10 +20,11 @@ class ShortlistController(
     @PostMapping("/toggle")
     @Transactional
     fun toggleShortlist(
+                        @RequestParam(name = "biodataId", required = false) biodataIdParam: Long?,
                         @RequestParam(name = "biodata_id", required = false) biodata_id: Long?,
                         request: HttpServletRequest): ResponseEntity<Any> {
         return try {
-            val biodataId =  biodata_id ?: return ResponseEntity.badRequest().body(mapOf("success" to false, "message" to "biodataId is required"))
+            val biodataId = biodataIdParam ?: biodata_id ?: return ResponseEntity.badRequest().body(mapOf("success" to false, "message" to "biodataId is required"))
 
             val userMobile = request.getAttribute("userMobile")?.toString() ?: return ResponseEntity.status(401).body("Unauthorized")
             val user = userRepository.findByMobileNo(userMobile) ?: return ResponseEntity.notFound().build()
