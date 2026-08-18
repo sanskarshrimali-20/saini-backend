@@ -14,7 +14,7 @@ class BiodataService(private val biodataRepository: BiodataRepository) {
 
     private val uploadDir = "uploads/biodata_photos/"
 
-    fun saveBiodata(biodata: Biodata, photos: Array<MultipartFile>?, userMobile: String): Biodata {
+    fun saveBiodata(biodata: Biodata, photos: List<MultipartFile>?, userMobile: String): Biodata {
         val photoUrls = mutableListOf<String>()
 
         val uploadFolder = File(uploadDir)
@@ -52,7 +52,7 @@ class BiodataService(private val biodataRepository: BiodataRepository) {
         return biodataRepository.searchBiodatas(userMobile, query, gender, maritalStatus)
     }
 
-    fun updateBiodata(id: Long, updatedBiodata: Biodata, photos: Array<MultipartFile>?, userMobile: String): Biodata {
+    fun updateBiodata(id: Long, updatedBiodata: Biodata, photos: List<MultipartFile>?, userMobile: String): Biodata {
         val existingBiodata = biodataRepository.findById(id)
             .orElseThrow { Exception("Biodata not found") }
 
@@ -68,6 +68,7 @@ class BiodataService(private val biodataRepository: BiodataRepository) {
             birthTime = updatedBiodata.birthTime
             birthPlace = updatedBiodata.birthPlace
             height = updatedBiodata.height
+            maritalStatus = updatedBiodata.maritalStatus
             complexion = updatedBiodata.complexion
             gotra = updatedBiodata.gotra
             qualification = updatedBiodata.qualification
