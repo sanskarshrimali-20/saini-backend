@@ -26,16 +26,19 @@ class BiodataService(private val biodataRepository: BiodataRepository) {
             if (!photo.isEmpty) {
                 val fileName = UUID.randomUUID().toString() + "_" + photo.originalFilename
                 val path = Paths.get(uploadDir + fileName)
-                Files.write(path, photo.bytes)
                 
-                // Construct URL - Automatically uses Render host or local IP
+                // Save file using InputStream to save memory
+                photo.inputStream.use { input ->
+                    Files.copy(input, path)
+                }
+                
                 val host = System.getenv("RENDER_EXTERNAL_URL") ?: "http://192.168.0.112:8080"
                 val url = "$host/uploads/biodata_photos/$fileName"
                 photoUrls.add(url)
             }
         }
 
-        biodata.profilePicUrls = photoUrls
+        biodata.profilePicUrls = photoUrls.joinToString(",")
         biodata.createdBy = userMobile
         return biodataRepository.save(biodata)
     }
@@ -96,13 +99,15 @@ class BiodataService(private val biodataRepository: BiodataRepository) {
                 if (!photo.isEmpty) {
                     val fileName = UUID.randomUUID().toString() + "_" + photo.originalFilename
                     val path = Paths.get(uploadDir + fileName)
-                    Files.write(path, photo.bytes)
+                    photo.inputStream.use { input ->
+                        Files.copy(input, path)
+                    }
                     val host = System.getenv("RENDER_EXTERNAL_URL") ?: "http://192.168.0.112:8080"
                     val url = "$host/uploads/biodata_photos/$fileName"
                     photoUrls.add(url)
                 }
             }
-            existingBiodata.profilePicUrls = photoUrls
+            existingBiodata.profilePicUrls = photoUrls.joinToString(",")
         }
 
         return biodataRepository.save(existingBiodata)

@@ -37,11 +37,9 @@ data class Biodata(
     var nativePlace: String = "",
     var contactNumber: String = "",
 
-    // Photo URLs (Stored as a collection)
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "biodata_photos", joinColumns = [JoinColumn(name = "biodata_id")])
-    @Column(name = "photo_url")
-    var profilePicUrls: List<String> = mutableListOf(),
+    // Photo URLs (Stored as a comma-separated string to avoid table creation issues on free tier)
+    @Column(columnDefinition = "TEXT")
+    var profilePicUrls: String = "",
 
     // Identification
     var createdBy: String = ""
