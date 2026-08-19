@@ -15,12 +15,15 @@ class DatabaseConfig {
     fun dataSource(): DataSource {
         val databaseUrl = System.getenv("SPRING_DATASOURCE_URL") 
             ?: System.getenv("DATABASE_URL")
-            ?: return DataSourceBuilder.create()
+
+        if (databaseUrl == null) {
+            return DataSourceBuilder.create()
                 .url("jdbc:mysql://localhost:3306/saini_db?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC")
-                .username("saini_user")
-                .password("saini_pass")
+                .username(System.getenv("SPRING_DATASOURCE_USERNAME") ?: "saini_user")
+                .password(System.getenv("SPRING_DATASOURCE_PASSWORD") ?: "saini_pass")
                 .driverClassName("com.mysql.cj.jdbc.Driver")
                 .build()
+        }
 
         return if (databaseUrl.startsWith("mysql://")) {
             val uri = URI(databaseUrl)
@@ -39,6 +42,8 @@ class DatabaseConfig {
         } else {
             DataSourceBuilder.create()
                 .url(databaseUrl)
+                .username(System.getenv("SPRING_DATASOURCE_USERNAME") ?: "saini_user")
+                .password(System.getenv("SPRING_DATASOURCE_PASSWORD") ?: "saini_pass")
                 .driverClassName("com.mysql.cj.jdbc.Driver")
                 .build()
         }
