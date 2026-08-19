@@ -31,7 +31,12 @@ class DatabaseConfig {
             val parts = userInfo.split(":")
             val username = parts.getOrElse(0) { "" }
             val password = parts.getOrElse(1) { "" }
-            val jdbcUrl = "jdbc:mysql://${uri.host}:${if (uri.port != -1) uri.port else 3306}${uri.path}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+            val sslParams = if (uri.host.contains("aivencloud.com")) {
+                "&useSSL=true&requireSSL=true&verifyServerCertificate=false"
+            } else {
+                "&useSSL=false&allowPublicKeyRetrieval=true"
+            }
+            val jdbcUrl = "jdbc:mysql://${uri.host}:${if (uri.port != -1) uri.port else 3306}${uri.path}?serverTimezone=UTC$sslParams"
             
             DataSourceBuilder.create()
                 .url(jdbcUrl)
