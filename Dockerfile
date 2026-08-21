@@ -1,10 +1,8 @@
-# Stage 1: Build the JAR with Gradle
 FROM gradle:8.5-jdk17-alpine AS build
 WORKDIR /app
 COPY --chown=gradle:gradle . .
 RUN ./gradlew bootJar --no-daemon -x test
 
-# Stage 2: Minimal runtime container
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
