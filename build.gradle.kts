@@ -1,8 +1,8 @@
 plugins {
-	kotlin("jvm") version "2.3.21"
-	kotlin("plugin.spring") version "2.3.21"
-	id("org.springframework.boot") version "4.1.0"
-	id("io.spring.dependency-management") version "1.1.7"
+	kotlin("jvm") version "1.9.24"
+	kotlin("plugin.spring") version "1.9.24"
+	id("org.springframework.boot") version "3.3.2"
+	id("io.spring.dependency-management") version "1.1.6"
 }
 
 group = "com.saini.app"
@@ -20,13 +20,11 @@ repositories {
 
 dependencies {
 
-	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("tools.jackson.module:jackson-module-kotlin")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	
 
 	implementation("io.jsonwebtoken:jjwt-api:0.12.5")
@@ -36,10 +34,7 @@ dependencies {
 	// Spring Data JPA for Database operations
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
-    // Kotlin reflection support (Required for Spring Boot + Kotlin)
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-    // Database Driver (Using MySQL as an example; change if using PostgreSQL/H2)
+    // Database Driver
     runtimeOnly("com.mysql:mysql-connector-j")
 
 	//payment integration

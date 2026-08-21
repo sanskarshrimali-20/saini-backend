@@ -12,6 +12,7 @@ data class User(
     // Assigning default empty strings "" creates a hidden no-arg constructor for Hibernate
     var fullName: String = "",
     var email: String = "",
+    @Column(unique = true, nullable = false)
     var mobileNo: String = "",
     val password: String = "",
     val gender: String = "",

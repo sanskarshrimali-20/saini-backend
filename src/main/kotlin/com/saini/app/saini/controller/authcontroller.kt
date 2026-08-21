@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @RestController
 @RequestMapping("/api/saini")
+@CrossOrigin(origins = ["*"]) // Enable CORS for all origins
 class AuthController(
     private val userRepository: UserRepository,
     private val otpRepository: OtpRepository,
@@ -23,10 +24,14 @@ class AuthController(
 ) {
 
     @PostMapping("/auth/login")
-    fun login(@RequestBody loginRequest: User): ResponseEntity<Any> {
-        val user = userRepository.findByMobileNo(loginRequest.mobileNo)
+    fun login(@RequestBody loginRequest: Map<String, String>): ResponseEntity<Any> {
+        val mobileNo = loginRequest["mobileNo"] ?: return ResponseEntity.badRequest().body("Mobile number is required")
+        val password = loginRequest["password"] ?: return ResponseEntity.badRequest().body("Password is required")
 
-        if (user != null && user.password == loginRequest.password) {
+        println("Login attempt for mobile: $mobileNo")
+        val user = userRepository.findByMobileNo(mobileNo)
+
+        if (user != null && user.password == password) {
             val dynamicToken = jwtUtil.generateToken(user.mobileNo)
 
             val authResponse = AuthResponse(
@@ -40,24 +45,35 @@ class AuthController(
                 isSubscribed = user.isSubscribed
             )
             
+            println("Login successful for: $mobileNo")
             return ResponseEntity.ok(authResponse)
         }
 
+        println("Login failed for: $mobileNo")
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid mobile number or password")
     }
 
     @PostMapping("/auth/signup")
-    fun signup(@RequestBody signupRequest: User): ResponseEntity<Any> {
-        if (userRepository.findByMobileNo(signupRequest.mobileNo) != null) {
+    fun signup(@RequestBody signupRequest: Map<String, String>): ResponseEntity<Any> {
+        val mobileNo = signupRequest["mobileNo"] ?: return ResponseEntity.badRequest().body("Mobile number is required")
+        val fullName = signupRequest["fullName"] ?: ""
+        val email = signupRequest["email"] ?: ""
+        val password = signupRequest["password"] ?: ""
+        val gender = signupRequest["gender"] ?: ""
+
+        println("Signup attempt for mobile: $mobileNo")
+
+        if (userRepository.findByMobileNo(mobileNo) != null) {
+            println("Signup failed: Mobile $mobileNo already exists")
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mobile Number is already taken!")
         }
 
         val newUser = User(
-            fullName = signupRequest.fullName,
-            email = signupRequest.email,
-            mobileNo = signupRequest.mobileNo,
-            gender = signupRequest.gender,
-            password = signupRequest.password
+            fullName = fullName,
+            email = email,
+            mobileNo = mobileNo,
+            gender = gender,
+            password = password
         )
 
         val savedUser = userRepository.save(newUser)
@@ -74,6 +90,7 @@ class AuthController(
             isSubscribed = savedUser.isSubscribed
         )
 
+        println("Signup successful for: $mobileNo")
         return ResponseEntity.status(HttpStatus.CREATED).body(authResponse)
     }
 
