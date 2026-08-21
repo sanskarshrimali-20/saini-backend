@@ -1,10 +1,12 @@
-FROM eclipse-temurin:17-jdk-jammy AS build
+# Stage 1: Build the JAR with Gradle
+FROM gradle:8.5-jdk17-alpine AS build
 WORKDIR /app
-COPY . .
-RUN ./gradlew build -x test --no-daemon -Dorg.gradle.jvmargs="-Xmx256m"
+COPY --chown=gradle:gradle . .
+RUN ./gradlew bootJar --no-daemon -x test
 
-FROM eclipse-temurin:17-jre-jammy
+# Stage 2: Minimal runtime container
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=build /app/build/libs/saini-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-Xmx256m", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
